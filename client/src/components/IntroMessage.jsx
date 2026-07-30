@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, Button, Link, Text } from "@chakra-ui/react";
 
 const IntroMessage = () => {
@@ -14,7 +14,7 @@ const IntroMessage = () => {
                 fontWeight={"semibold"}
                 color={"purple"}
             >
-                CTC Practice 24/25
+                CTC Practice 67 SIX SEVEN
             </Text>
 
             <Box
@@ -25,7 +25,7 @@ const IntroMessage = () => {
                 <Text as="p">
                     Your task here, as described in the project document, is to
                     fetch data from your backend and database, and to then
-                    display it on this page. There's no need to style your work,
+                    display it on this page. There is no need to style your work,
                     as our primary focus is on assessing the core
                     implementation. Use Chakra for your UI components and Axios
                     for data fetching.

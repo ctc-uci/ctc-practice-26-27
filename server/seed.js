@@ -20,49 +20,49 @@ const PROJECT_INFO /*: ProjectInfo[] */ = [
         ],
     },
     {
-        npoId: 3,
+        npoId: 2,
         startYear: 2023,
         endYear: 2024,
         projectLeads: ["Josh Lipton", "Madhu Sharma", "Minh Nguyen"],
     },
     {
-        npoId: 4,
+        npoId: 3,
         startYear: 2023,
         endYear: 2024,
         projectLeads: ["Michael Pien", "Michelle Lin", "Selina Arjomand"],
     },
     {
-        npoId: 5,
+        npoId: 4,
         startYear: 2022,
         endYear: 2023,
         projectLeads: ["Hang Cao", "Justin Liao", "Zoya Soy"],
     },
     {
-        npoId: 6,
+        npoId: 5,
         startYear: 2022,
         endYear: 2023,
         projectLeads: ["Gurneet Cheema", "Madhu Sharma", "Carlos Lim"],
     },
     {
-        npoId: 7,
+        npoId: 6,
         startYear: 2022,
         endYear: 2023,
         projectLeads: ["Avent Chiu", "Claude Yan", "Allison Liu"],
     },
     {
-        npoId: 8,
+        npoId: 7,
         startYear: 2021,
         endYear: 2022,
         projectLeads: ["Jane Vo", "Allen Luo", "Anikait Rao"],
     },
     {
-        npoId: 9,
+        npoId: 8,
         startYear: 2021,
         endYear: 2022,
         projectLeads: ["Chris Tian", "Henry Gip", "Megha Kak"],
     },
     {
-        npoId: 10,
+        npoId: 9,
         startYear: 2021,
         endYear: 2022,
         projectLeads: [
@@ -95,22 +95,24 @@ const seed = async (tableName) => {
     try {
         await db.query("BEGIN");
 
-        for (const project of PROJECT_INFO) {
-            await db.query(
-                `INSERT INTO ${tableName} (npo_id, start_year, end_year, project_leads) VALUES ($1, $2, $3, $4);`,
-                [
-                    project.npoId,
-                    project.startYear,
-                    project.endYear,
-                    project.projectLeads,
-                ]
-            );
-        }
+        await db.tx((t) =>
+            t.batch(
+                PROJECT_INFO.map((project) =>
+                    t.none(
+                        `INSERT INTO ${tableName} (npo_id, start_year, end_year, project_leads) VALUES ($1, $2, $3, $4);`,
+                        [
+                            project.npoId,
+                            project.startYear,
+                            project.endYear,
+                            project.projectLeads,
+                        ]
+                    )
+                )
+            )
+        );
 
-        await db.query("COMMIT");
         console.log("Seeding complete");
     } catch (err) {
-        await db.query("ROLLBACK");
         console.log("err", err);
     }
 };
