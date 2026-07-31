@@ -117,4 +117,4 @@ const seed = async (tableName) => {
     }
 };
 
-seed("FILL IN HERE");
+seed("yk_project_info");
