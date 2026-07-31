@@ -15,7 +15,6 @@
         "*.js": "yarn run eslint"
     },
     "dependencies": {
-        "@ianvs/prettier-plugin-sort-imports": "^4.3.0",
         "aws-sdk": "^2.1568.0",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
