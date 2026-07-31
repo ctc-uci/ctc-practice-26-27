@@ -5,12 +5,12 @@ import {
     TableContainer,
     Tbody,
     Td,
-    Tfoot,
     Th,
     Thead,
     Tr,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 import IntroMessage from "./components/IntroMessage";
 
@@ -20,12 +20,16 @@ const Backend = axios.create({
 });
 
 const App = () => {
-    const getData = async () => {
-        const data = await Backend.get(`/`);
-        console.log(data);
-    };
+    const [data, setData] = useState([]);
 
-    getData();
+    useEffect(() => {
+        const getData = async () => {
+            const res = await Backend.get(`/projects`);
+            setData(res.data);
+        };
+
+        getData();
+    }, []);
 
     return (
         <Box
@@ -39,39 +43,31 @@ const App = () => {
             <TableContainer>
                 <Table variant="simple">
                     <TableCaption>
-                        Imperial to metric conversion factors
+                        CTC NPO Information
                     </TableCaption>
                     <Thead>
                         <Tr>
-                            <Th>To convert</Th>
-                            <Th>into</Th>
-                            <Th isNumeric>multiply by</Th>
+                            <Th>NPO Name</Th>
+                            <Th>NPO Description</Th>
+                            <Th>Start Year</Th>
+                            <Th>End Year</Th>
+                            <Th>Project Leads</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
-                            <Td>inches</Td>
-                            <Td>millimetres (mm)</Td>
-                            <Td isNumeric>25.4</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>feet</Td>
-                            <Td>centimetres (cm)</Td>
-                            <Td isNumeric>30.48</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>yards</Td>
-                            <Td>metres (m)</Td>
-                            <Td isNumeric>0.91444</Td>
-                        </Tr>
+                        {
+                            data?.map((project) => (
+                                <Tr key={project.npoId}>
+                                    <Td>{project.npoName}</Td>
+                                    <Td>{project.npoDescription}</Td>
+                                    <Td>{project.startYear}</Td>
+                                    <Td>{project.endYear}</Td>
+                                    <Td>{project.projectLeads.join(", ")}</Td>
+                                </Tr>
+                            ))
+                        }
+                        
                     </Tbody>
-                    <Tfoot>
-                        <Tr>
-                            <Th>To convert</Th>
-                            <Th>into</Th>
-                            <Th isNumeric>multiply by</Th>
-                        </Tr>
-                    </Tfoot>
                 </Table>
             </TableContainer>
         </Box>
