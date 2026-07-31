@@ -21,7 +21,7 @@ const Backend = axios.create({
 
 const App = () => {
     const getData = async () => {
-        const data = await Backend.get(`/`);
+        const data = await Backend.get(`/projects`);
         console.log(data);
     };
 
