@@ -30,7 +30,7 @@ const App = () => {
     useEffect(() => {
         getData();
         console.log(data)
-    }, [])
+    }, [data])
     
 
     return (
