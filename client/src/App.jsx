@@ -39,13 +39,15 @@ const App = () => {
             <TableContainer>
                 <Table variant="simple">
                     <TableCaption>
-                        Imperial to metric conversion factors
+                        CTC NPO Information
                     </TableCaption>
                     <Thead>
                         <Tr>
-                            <Th>To convert</Th>
-                            <Th>into</Th>
-                            <Th isNumeric>multiply by</Th>
+                            <Th>NPO Name</Th>
+                            <Th>NPO Description</Th>
+                            <Th isNumeric>Start Year</Th>
+                            <Th isNumeric>End Year</Th>
+                            <Th>Project Leads </Th>
                         </Tr>
                     </Thead>
                     <Tbody>
@@ -65,13 +67,6 @@ const App = () => {
                             <Td isNumeric>0.91444</Td>
                         </Tr>
                     </Tbody>
-                    <Tfoot>
-                        <Tr>
-                            <Th>To convert</Th>
-                            <Th>into</Th>
-                            <Th isNumeric>multiply by</Th>
-                        </Tr>
-                    </Tfoot>
                 </Table>
             </TableContainer>
         </Box>
