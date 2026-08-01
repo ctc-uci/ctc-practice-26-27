@@ -37,4 +37,20 @@ projectsRouter.post('/', async(req, res) => {
     }
 })
 
+projectsRouter.delete('/:id', async(req, res) => {
+    try {
+        const id = parseInt(req.params.id)
+        const oldProject = await db.any(`
+            DELETE FROM ht_project_info
+            WHERE id = $1
+            RETURNING *
+            `,
+            [id]
+        )
+        res.status(200).json(keysToCamel(oldProject))
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
 module.exports = projectsRouter;
