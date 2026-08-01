@@ -29,6 +29,7 @@ const App = () => {
 
     useEffect(() => {
         getData();
+        console.log(data)
     }, [])
     
 
@@ -62,7 +63,9 @@ const App = () => {
                                 <Td>{proj.description}</Td>
                                 <Td isNumeric>{proj.startYear}</Td>
                                 <Td isNumeric>{proj.endYear}</Td>
-                                <Td>{proj.projectLeads}</Td>
+                                <Td>
+                                    {proj.projectLeads.join(', ')}
+                                </Td>
                             </Tr>
                         )}
                     </Tbody>
