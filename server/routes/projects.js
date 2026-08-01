@@ -37,9 +37,31 @@ projectsRouter.post('/', async(req, res) => {
     }
 })
 
+projectsRouter.put('/:id', async(req, res) => {
+    try {
+    const { id } = req.params;
+    const { startYear, endYear, projectLeads } = req.body;
+    const updatedProject = await db.query(
+      `
+      UPDATE ht_project_info
+      SET
+        start_year = COALESCE($1, start_year),
+        end_year = COALESCE($2, end_year),
+        project_leads = COALESCE($3, project_leads)
+      WHERE id = $4
+      RETURNING *;
+      `,
+      [startYear, endYear, projectLeads, id],
+    );
+        res.status(200).send(keysToCamel(updatedProject));
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+
 projectsRouter.delete('/:id', async(req, res) => {
     try {
-        const id = parseInt(req.params.id)
+        const { id } = req.params
         const oldProject = await db.any(`
             DELETE FROM ht_project_info
             WHERE id = $1
