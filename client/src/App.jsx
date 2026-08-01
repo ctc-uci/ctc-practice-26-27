@@ -5,7 +5,7 @@ import {
     TableContainer,
     Tbody,
     Td,
-    Tfoot,
+    Text,
     Th,
     Thead,
     Tr,
@@ -59,7 +59,9 @@ const App = () => {
                         {data.map(proj => 
                             <Tr key={proj.id}>
                                 <Td>{proj.name}</Td>
-                                <Td>{proj.description}</Td>
+                                <Td maxWidth={500} whiteSpace="normal">
+                                    <Text>{proj.description}</Text>
+                                </Td>
                                 <Td isNumeric>{proj.startYear}</Td>
                                 <Td isNumeric>{proj.endYear}</Td>
                                 <Td>
