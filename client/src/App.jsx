@@ -30,7 +30,7 @@ const App = () => {
     useEffect(() => {
         getData();
         console.log(data)
-    }, [data])
+    }, [])
     
 
     return (
@@ -64,7 +64,7 @@ const App = () => {
                                 <Td isNumeric>{proj.startYear}</Td>
                                 <Td isNumeric>{proj.endYear}</Td>
                                 <Td>
-                                    {proj.projectLeads.join(', ')}
+                                    {proj.projectLeads?.join(', ')}
                                 </Td>
                             </Tr>
                         )}
