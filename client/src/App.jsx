@@ -11,7 +11,7 @@ import {
     Tr,
 } from "@chakra-ui/react";
 import axios from "axios";
-
+import { useEffect, useState } from 'react'
 import IntroMessage from "./components/IntroMessage";
 
 const Backend = axios.create({
@@ -20,12 +20,17 @@ const Backend = axios.create({
 });
 
 const App = () => {
+    const [data, setData] = useState([{}])
+
     const getData = async () => {
         const data = await Backend.get(`/projects`);
-        console.log(data["data"]);
+        setData(data["data"])
     };
 
-    getData();
+    useEffect(() => {
+        getData();
+    }, [])
+    
 
     return (
         <Box
@@ -51,21 +56,15 @@ const App = () => {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
-                            <Td>inches</Td>
-                            <Td>millimetres (mm)</Td>
-                            <Td isNumeric>25.4</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>feet</Td>
-                            <Td>centimetres (cm)</Td>
-                            <Td isNumeric>30.48</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>yards</Td>
-                            <Td>metres (m)</Td>
-                            <Td isNumeric>0.91444</Td>
-                        </Tr>
+                        {data.map(proj => 
+                            <Tr key={proj.id}>
+                                <Td>{proj.name}</Td>
+                                <Td>{proj.description}</Td>
+                                <Td isNumeric>{proj.startYear}</Td>
+                                <Td isNumeric>{proj.endYear}</Td>
+                                <Td>{proj.projectLeads}</Td>
+                            </Tr>
+                        )}
                     </Tbody>
                 </Table>
             </TableContainer>
