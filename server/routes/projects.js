@@ -21,4 +21,20 @@ projectsRouter.get('/', async(req,res) => {
     }
 })
 
+projectsRouter.post('/', async(req, res) => {
+    try {
+        const { npoId, startYear, endYear, projectLeads } = req.body
+        const newProject = await db.any(`
+            INSERT INTO ht_project_info (npo_id, start_year, end_year, project_leads)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+            `,
+            [npoId, startYear, endYear, projectLeads]
+        )
+        res.status(200).json(keysToCamel(newProject))
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
 module.exports = projectsRouter;
