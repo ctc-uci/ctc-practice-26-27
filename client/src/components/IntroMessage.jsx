@@ -14,7 +14,7 @@ const IntroMessage = () => {
                 fontWeight={"semibold"}
                 color={"purple"}
             >
-                CTC Practice 67 SIX SEVEN
+                CTC Practice 24/25
             </Text>
 
             <Box
