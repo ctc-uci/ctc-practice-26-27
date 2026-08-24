@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import {
     Box,
     Button,
+    Editable,
+    EditableInput,
+    EditablePreview,
     Table,
     TableCaption,
     TableContainer,
@@ -9,6 +12,7 @@ import {
     Td,
     Th,
     Thead,
+    Tooltip,
     Tr,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -20,8 +24,19 @@ const Backend = axios.create({
     withCredentials: true,
 });
 
+const wrapCell = { whiteSpace: "normal", wordBreak: "break-word" };
+const editableStyle = {
+    bg: "purple.50",
+    borderBottom: "1px dashed",
+    borderColor: "purple.400",
+    px: 1,
+    borderRadius: "sm",
+};
+
 const App = () => {
     const [projects, setProjects] = useState([]);
+    const [edits, setEdits] = useState({});
+    const [savedId, setSavedId] = useState(null);
 
     const getData = async () => {
         const { data } = await Backend.get(`/`);
@@ -32,23 +47,26 @@ const App = () => {
         getData();
     }, []);
 
-    const handleEdit = async (project) => {
-        const startYear = prompt("Start Year", project.startYear);
-        const endYear = prompt("End Year", project.endYear);
-        const projectLeads = prompt(
-            "Project Leads (comma separated)",
-            project.projectLeads.join(", ")
-        );
-        if (startYear === null || endYear === null || projectLeads === null)
-            return;
+    const setField = (id, field, value) => {
+        setEdits({ ...edits, [id]: { ...edits[id], [field]: value } });
+    };
 
+    const handleSave = async (project) => {
+        const edit = edits[project.id] ?? {};
         await Backend.put(`/${project.id}`, {
             npoId: project.npoId,
-            startYear: Number(startYear),
-            endYear: Number(endYear),
-            projectLeads: projectLeads.split(",").map((s) => s.trim()),
+            startYear: Number(edit.startYear ?? project.startYear),
+            endYear: Number(edit.endYear ?? project.endYear),
+            projectLeads: (
+                edit.projectLeads ?? project.projectLeads.join(", ")
+            )
+                .split(",")
+                .map((lead) => lead.trim()),
         });
-        getData();
+        await getData();
+
+        setSavedId(project.id);
+        setTimeout(() => setSavedId(null), 1500);
     };
 
     return (
@@ -60,34 +78,96 @@ const App = () => {
         >
             <IntroMessage />
 
-            <TableContainer>
-                <Table variant="simple">
-                    <TableCaption>NPO Project Info</TableCaption>
+            <TableContainer overflowX="visible">
+                <Table
+                    variant="simple"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                >
+                    <TableCaption>
+                        NPO Project Info (✎ = editable column)
+                    </TableCaption>
                     <Thead>
                         <Tr>
-                            <Th>Name</Th>
-                            <Th>Description</Th>
-                            <Th isNumeric>Start Year</Th>
-                            <Th isNumeric>End Year</Th>
-                            <Th>Project Leads</Th>
-                            <Th></Th>
+                            <Th width="15%">Name</Th>
+                            <Th width="35%">Description</Th>
+                            <Th isNumeric width="10%">
+                                ✎ Start Year
+                            </Th>
+                            <Th isNumeric width="10%">
+                                ✎ End Year
+                            </Th>
+                            <Th width="25%">✎ Project Leads</Th>
+                            <Th width="80px"></Th>
                         </Tr>
                     </Thead>
                     <Tbody>
                         {projects.map((project) => (
                             <Tr key={project.id}>
-                                <Td>{project.name}</Td>
-                                <Td>{project.description}</Td>
-                                <Td isNumeric>{project.startYear}</Td>
-                                <Td isNumeric>{project.endYear}</Td>
-                                <Td>{project.projectLeads.join(", ")}</Td>
-                                <Td>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => handleEdit(project)}
+                                <Td sx={wrapCell}>{project.name}</Td>
+                                <Td sx={wrapCell}>{project.description}</Td>
+                                <Td sx={{ ...wrapCell, textAlign: "center" }}>
+                                    <Editable
+                                        defaultValue={String(
+                                            project.startYear
+                                        )}
+                                        onChange={(value) =>
+                                            setField(
+                                                project.id,
+                                                "startYear",
+                                                value
+                                            )
+                                        }
                                     >
-                                        Edit
-                                    </Button>
+                                        <EditablePreview sx={editableStyle} />
+                                        <EditableInput />
+                                    </Editable>
+                                </Td>
+                                <Td sx={{ ...wrapCell, textAlign: "center" }}>
+                                    <Editable
+                                        defaultValue={String(project.endYear)}
+                                        onChange={(value) =>
+                                            setField(
+                                                project.id,
+                                                "endYear",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <EditablePreview sx={editableStyle} />
+                                        <EditableInput />
+                                    </Editable>
+                                </Td>
+                                <Td sx={wrapCell}>
+                                    <Editable
+                                        defaultValue={project.projectLeads.join(
+                                            ", "
+                                        )}
+                                        onChange={(value) =>
+                                            setField(
+                                                project.id,
+                                                "projectLeads",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <EditablePreview sx={editableStyle} />
+                                        <EditableInput />
+                                    </Editable>
+                                </Td>
+                                <Td>
+                                    <Tooltip
+                                        label="Saved!"
+                                        isOpen={savedId === project.id}
+                                        placement="top"
+                                        hasArrow
+                                    >
+                                        <Button
+                                            size="sm"
+                                            onClick={() =>
+                                                handleSave(project)
+                                            }
+                                        >Save</Button>
+                                    </Tooltip>
                                 </Td>
                             </Tr>
                         ))}
