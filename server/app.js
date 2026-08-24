@@ -5,7 +5,7 @@ const schedule = require("node-schedule"); // FIXME: Keep only if scheduling cro
 require("dotenv").config();
 
 // Routes
-const sampleRouter = require("./routes/sample"); // FIXME: delete sample router
+const projectsRouter = require("./routes/projects");
 
 schedule.scheduleJob("0 0 0 0 0", () => console.log("Hello Cron Job!")); // FIXME: delete sample cronjob
 
@@ -31,7 +31,7 @@ app.use(
 app.use(cookieParser());
 
 app.use(express.json()); // for req.body
-app.use("/", sampleRouter); // FIXME: delete sample endpoint
+app.use("/", projectsRouter); // FIXME: delete sample endpoint
 
 app.listen(SERVER_PORT, () => {
     console.log(`Server listening on ${SERVER_PORT}`);

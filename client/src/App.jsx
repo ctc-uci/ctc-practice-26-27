@@ -1,11 +1,12 @@
+import { useEffect, useState } from "react";
 import {
     Box,
+    Button,
     Table,
     TableCaption,
     TableContainer,
     Tbody,
     Td,
-    Tfoot,
     Th,
     Thead,
     Tr,
@@ -20,12 +21,35 @@ const Backend = axios.create({
 });
 
 const App = () => {
+    const [projects, setProjects] = useState([]);
+
     const getData = async () => {
-        const data = await Backend.get(`/`);
-        console.log(data);
+        const { data } = await Backend.get(`/`);
+        setProjects(data);
     };
 
-    getData();
+    useEffect(() => {
+        getData();
+    }, []);
+
+    const handleEdit = async (project) => {
+        const startYear = prompt("Start Year", project.startYear);
+        const endYear = prompt("End Year", project.endYear);
+        const projectLeads = prompt(
+            "Project Leads (comma separated)",
+            project.projectLeads.join(", ")
+        );
+        if (startYear === null || endYear === null || projectLeads === null)
+            return;
+
+        await Backend.put(`/${project.id}`, {
+            npoId: project.npoId,
+            startYear: Number(startYear),
+            endYear: Number(endYear),
+            projectLeads: projectLeads.split(",").map((s) => s.trim()),
+        });
+        getData();
+    };
 
     return (
         <Box
@@ -38,40 +62,36 @@ const App = () => {
 
             <TableContainer>
                 <Table variant="simple">
-                    <TableCaption>
-                        Imperial to metric conversion factors
-                    </TableCaption>
+                    <TableCaption>NPO Project Info</TableCaption>
                     <Thead>
                         <Tr>
-                            <Th>To convert</Th>
-                            <Th>into</Th>
-                            <Th isNumeric>multiply by</Th>
+                            <Th>Name</Th>
+                            <Th>Description</Th>
+                            <Th isNumeric>Start Year</Th>
+                            <Th isNumeric>End Year</Th>
+                            <Th>Project Leads</Th>
+                            <Th></Th>
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
-                            <Td>inches</Td>
-                            <Td>millimetres (mm)</Td>
-                            <Td isNumeric>25.4</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>feet</Td>
-                            <Td>centimetres (cm)</Td>
-                            <Td isNumeric>30.48</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>yards</Td>
-                            <Td>metres (m)</Td>
-                            <Td isNumeric>0.91444</Td>
-                        </Tr>
+                        {projects.map((project) => (
+                            <Tr key={project.id}>
+                                <Td>{project.name}</Td>
+                                <Td>{project.description}</Td>
+                                <Td isNumeric>{project.startYear}</Td>
+                                <Td isNumeric>{project.endYear}</Td>
+                                <Td>{project.projectLeads.join(", ")}</Td>
+                                <Td>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => handleEdit(project)}
+                                    >
+                                        Edit
+                                    </Button>
+                                </Td>
+                            </Tr>
+                        ))}
                     </Tbody>
-                    <Tfoot>
-                        <Tr>
-                            <Th>To convert</Th>
-                            <Th>into</Th>
-                            <Th isNumeric>multiply by</Th>
-                        </Tr>
-                    </Tfoot>
                 </Table>
             </TableContainer>
         </Box>

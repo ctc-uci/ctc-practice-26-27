@@ -14,7 +14,7 @@ const IntroMessage = () => {
                 fontWeight={"semibold"}
                 color={"purple"}
             >
-                CTC Practice 67 SIX SEVEN
+                CTC NPO Project Info
             </Text>
 
             <Box
