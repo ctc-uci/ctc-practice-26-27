@@ -15,9 +15,72 @@ projectsRouter.get("/", async (req, res) => {
            JOIN npo_info n ON p.npo_id = n.id
            ORDER BY p.id;
            `);
-        res.status(200).json(keysToCamel(projects));
+        return res.status(200).json(keysToCamel(projects));
     } catch (err) {
-        res.status(500).send(err.message);
+        return res.status(500).send(err.message);
+    }
+});
+
+projectsRouter.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { npoId, startYear, endYear, projectLeads } = req.body;
+
+    try {
+        const project = await db.one(
+            `
+            UPDATE ak_project_info
+            SET npo_id = $1, start_year = $2, end_year = $3, project_leads = $4
+            WHERE id = $5
+            RETURNING *;
+        `,
+            [npoId, startYear, endYear, projectLeads, id]
+        );
+
+        return res.status(200).json(keysToCamel(project));
+    } catch (err) {
+        if (err.received === 0) {
+            return res.status(404).send("Project not found");
+        }
+        return res.status(500).send(err.message);
+    }
+});
+
+projectsRouter.post("/", async (req, res) => {
+    const { npoId, startYear, endYear, projectLeads } = req.body;
+
+    try {
+        const newProject = await db.one(
+            `
+            INSERT INTO ak_project_info (npo_id, start_year, end_year, project_leads)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *;
+        `,
+            [npoId, startYear, endYear, projectLeads]
+        );
+
+        return res.status(201).json(keysToCamel(newProject));
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+});
+
+projectsRouter.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deletedProject = await db.oneOrNone(
+            `
+            DELETE FROM ak_project_info
+            WHERE id = $1
+            RETURNING *;
+        `,
+            [id]
+        );
+        if (!deletedProject) {
+            return res.status(404).send("Project not found");
+        }
+        return res.status(204).send();
+    } catch (err) {
+        return res.status(500).send(err.message);
     }
 });
 
