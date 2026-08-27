@@ -1,5 +1,6 @@
 import {
     Box,
+    Input,
     Table,
     TableCaption,
     TableContainer,
@@ -20,6 +21,7 @@ const Backend = axios.create({
 
 const App = () => {
     const [data, setData] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const getData = async () => {
@@ -30,6 +32,20 @@ const App = () => {
         console.log(data);
     }, []);
 
+    useEffect(() => {
+        if (!searchTerm) {
+            Backend.get("/projects").then((res) => setData(res.data));
+            return;
+        }
+        Backend.get("/projects/search", { params: { lead: searchTerm } }).then(
+            (res) => setData(res.data)
+        );
+    });
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.checked);
+    };
+
     return (
         <Box
             display={"flex"}
@@ -38,6 +54,14 @@ const App = () => {
             marginX={"auto"}
         >
             <IntroMessage />
+
+            <Box maxWidth={320} marginBottom={4}>
+                <Input
+                    placeholder="Search by project lead"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                />
+            </Box>
 
             <TableContainer>
                 <Table variant="simple">
