@@ -21,6 +21,27 @@ projectsRouter.get("/", async (req, res) => {
     }
 });
 
+projectsRouter.get("/search", async (req, res) => {
+    const { lead } = req.query;
+
+    try {
+        const projects = await db.oneOrNone(
+            `
+           SELECT p.id, n.name, n.description, p.npo_id, p.start_year, p.end_year, p.project_leads
+           FROM ak_project_info p
+           JOIN npo_info n ON p.npo_id = n.id
+           WHERE n.name ILIKE $1
+           ORDER BY p.id;
+           `,
+            [`%${lead ?? ""}%`]
+        );
+
+        return res.status(200).json(projects);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+});
+
 projectsRouter.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { npoId, startYear, endYear, projectLeads } = req.body;
