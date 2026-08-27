@@ -5,6 +5,7 @@ import {
     Editable,
     EditableInput,
     EditablePreview,
+    Input,
     Table,
     TableCaption,
     TableContainer,
@@ -37,6 +38,7 @@ const App = () => {
     const [projects, setProjects] = useState([]);
     const [edits, setEdits] = useState({});
     const [savedId, setSavedId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const getData = async () => {
         const { data } = await Backend.get(`/`);
@@ -46,6 +48,22 @@ const App = () => {
     useEffect(() => {
         getData();
     }, []);
+
+    useEffect(() => {
+        if (!searchTerm) {
+            getData();
+            return;
+        }
+        Backend.get(`/search`, { params: { lead: searchTerm } }).then(
+            ({ data }) => {
+                setProjects(data);
+            }
+        );
+    });
+
+    const handleSearchChange = (e) => {
+        setEdits(e.target.value);
+    };
 
     const setField = (id, field, value) => {
         setEdits({ ...edits, [id]: { ...edits[id], [field]: value } });
@@ -77,6 +95,14 @@ const App = () => {
             marginX={"auto"}
         >
             <IntroMessage />
+
+            <Box maxWidth={320} marginBottom={4}>
+                <Input
+                    placeholder="Search by project lead"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                />
+            </Box>
 
             <TableContainer overflowX="visible">
                 <Table
