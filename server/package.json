@@ -25,7 +25,7 @@
         "eslint-plugin-import": "^2.25.2",
         "eslint-plugin-prettier": "^4.0.0",
         "express": "^4.17.1",
-        "mongoose": "^8.2.0",
+        "mongoose": "^8.24.1",
         "mysql": "^2.18.1",
         "node-schedule": "^2.1.1",
         "nodemailer": "^6.9.10",
